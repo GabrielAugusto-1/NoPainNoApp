@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  expo-app:
+    build: .
+    container_name: nopainnoapp
+    ports:
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+      - "8081:8081"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    command: npx expo start --tunnel
