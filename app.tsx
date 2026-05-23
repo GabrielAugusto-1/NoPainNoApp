@@ -1,11 +1,21 @@
 import { NavigationContainer } from "@react-navigation/native";
-import RootStack from "./app/(tabs)/index";
 
-export default function App(){
-    return(
-        <NavigationContainer>
-            <RootStack/>
-        </NavigationContainer>
-    );
+import StackRoot from "./app/(tabs)/index";
+
+import { CartProvider } from "./src/context/CartContext";
+
+export default function App() {
+
+  return (
+
+    <CartProvider>
+
+      <NavigationContainer>
+
+        <StackRoot />
+
+      </NavigationContainer>
+
+    </CartProvider>
+  );
 }
-

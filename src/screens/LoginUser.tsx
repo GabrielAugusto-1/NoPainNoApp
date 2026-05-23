@@ -3,7 +3,6 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../../app/(tabs)/index";
 
 import {
-  Dimensions,
   ImageBackground,
   StyleSheet,
   Text,
@@ -14,12 +13,54 @@ import {
 
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 
-const { width } = Dimensions.get("window");
+import { auth } from "@/services/connectionFirebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useState } from "react";
+
+
+
 
 type NavProp = StackNavigationProp<RootStackParamList>;
 
-export default function Cadastro() {
+export default function LoginUser() {
   const navigation = useNavigation<NavProp>();
+
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [mensagem, setMensagem] = useState("")
+
+  function validateFields() {
+  if (!email || !senha) {
+    setMensagem("Preencha todos os campos");
+    return false;
+  }
+  return true;
+}
+
+async function Login(): Promise<void> {
+      if (!validateFields()) return;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, senha);
+
+
+      setMensagem("Bem-vindo!");
+
+      navigation.navigate("AreaUser")
+      // limpar campos
+      setEmail("");
+      setSenha("");
+
+      // opcional: navegar para área do usuário
+      // navigation.navigate("AreaUser");
+
+    } catch (error: any) {
+
+      setMensagem("Erro ao realizar login");
+    }
+
+}
+
 
   return (
     <SafeAreaProvider>
@@ -46,20 +87,31 @@ export default function Cadastro() {
 
             {/* FORM */}
             <View style={styles.form}>
+              {mensagem ? (
+                <Text style={{ color: "red", marginBottom: 10 }}>
+                  {mensagem}
+                </Text>
+              ) : null}
 
               <TextInput
                 placeholder="Seu Email"
                 placeholderTextColor="#aaa"
                 style={styles.input}
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
               />
 
               <TextInput
                 placeholder="Sua Senha"
                 placeholderTextColor="#aaa"
                 style={styles.input}
+                secureTextEntry
+                value={senha}
+                onChangeText={setSenha}
               />
 
-              <TouchableOpacity style={styles.botaoCadastrar}>
+              <TouchableOpacity style={styles.botaoCadastrar} onPress={Login}>
                 <Text style={styles.textoBotao}>Entrar</Text>
               </TouchableOpacity>
 
@@ -135,6 +187,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.2)",
   },
+  
 
   botaoCadastrar: {
     width: "100%",
